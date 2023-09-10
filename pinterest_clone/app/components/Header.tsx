@@ -1,23 +1,34 @@
-import React from "react";
+"use client"
+import React, { useEffect } from "react";
 import Image from "next/image";
 import { HiSearch, HiBell, HiChat, HiChevronDown } from "react-icons/hi";
+import { useSession, signIn, signOut} from "next-auth/react";
+import { useRouter } from 'next/navigation';
+import { Session } from "inspector";
 
 function Header() {
+    const { data: session } = useSession();
+    const router = useRouter();
+
+    console.log(session);
     return (
-        <div className="flex gap-3 items-center p-3.5 text-[14px]">
+        <div className="flex gap-3 sm:gap-2 items-center p-3.5 text-[14px]">
             <Image src='/logo.png' alt='logo' width={47} height={47}
             className='hover:bg-gray-300 p-2 rounded-full cursor-pointer' />
-            <button className="bg-black text-white p-2 px-4 rounded-full">Home</button>
+            <button className="bg-black text-white p-2 px-4 rounded-full hidden sm:block">Home</button>
             <button className="font-semibold p-2 px-4 rounded-full">Create</button>
-            <div className="bg-[#e9e9e9] p-3 flex gap-3 items-center rounded-full w-full">
-                <HiSearch className='text-[20px] text-gray-500'/>
+            <div className="bg-[#e9e9e9] p-3 gap-3 items-center rounded-full w-full hidden sm:flex">
+                <HiSearch className='text-[23px] text-gray-500'/>
                 <input type="text" placeholder="Search" className="rounded-full px-2 py-1x bg-transparent outline-none w-full"/>
             </div>
-            <button className="px-2.5"><HiBell className="text-[30px] text-gray-500"/></button>
-            <button className="px-2.5"><HiChat className="text-[30px] text-gray-500"/></button>
-            <Image src='/logo.png' alt='logo' width={47} height={47}
-            className='hover:bg-gray-300 p-2 rounded-full cursor-pointer' />
-            <HiChevronDown className="text-[30px] text-gray-500"/>
+            <HiSearch className='text-[30px] text-gray-500 cursor-pointer sm:hidden'/>
+            <HiBell className="text-[30px] cursor-pointer sm:text-[45px] text-gray-500"/>
+            <HiChat className="text-[30px] cursor-pointer sm:text-[45px] text-gray-500"/>
+            {session?.user? <Image src={session.user.image} onClick={()=>router.push('/'+ session.user.email)}
+            alt='user-image' width={47} height={47} className='hover:bg-gray-300 p-2 rounded-full cursor-pointer'/>:
+
+            <button className="font-semibold p-2 px-4 rounded-full" onClick={() => signIn()}>Login</button> }
+            {/* <HiChevronDown className="text-[30px] text-gray-500"/> */}
         </div>
     )
 }
