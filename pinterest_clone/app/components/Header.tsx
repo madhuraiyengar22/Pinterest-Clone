@@ -5,9 +5,27 @@ import { HiSearch, HiBell, HiChat, HiChevronDown } from "react-icons/hi";
 import { useSession, signIn, signOut} from "next-auth/react";
 import { useRouter } from 'next/navigation';
 import { Session } from "inspector";
+import { doc, getFirestore, setDoc } from "firebase/firestore";
+import app from './../Shared/firebaseConfig';
 
 function Header() {
     const { data: session } = useSession();
+    // Initialize cloud firestore
+    const db = getFirestore(app);
+    const saveUserInfo = async() => {
+        if(session?.user){
+            await setDoc(doc(db, "user", session.user.email!), {
+                userName: session.user.name,
+                email: session.user.email,
+                userImage: session.user.image
+            });
+        }
+    }
+
+    useEffect(() => {
+        saveUserInfo();
+    },[session])
+
     const router = useRouter();
 
     console.log(session);
@@ -24,9 +42,8 @@ function Header() {
             <HiSearch className='text-[30px] text-gray-500 cursor-pointer sm:hidden'/>
             <HiBell className="text-[30px] cursor-pointer sm:text-[45px] text-gray-500"/>
             <HiChat className="text-[30px] cursor-pointer sm:text-[45px] text-gray-500"/>
-            {session?.user? <Image src={session.user.image} onClick={()=>router.push('/'+ session.user.email)}
+            {session?.user? <Image src={session.user.image!} onClick={()=>router.push('/'+ session.user?.email)}
             alt='user-image' width={47} height={47} className='hover:bg-gray-300 p-2 rounded-full cursor-pointer'/>:
-
             <button className="font-semibold p-2 px-4 rounded-full" onClick={() => signIn()}>Login</button> }
             {/* <HiChevronDown className="text-[30px] text-gray-500"/> */}
         </div>
