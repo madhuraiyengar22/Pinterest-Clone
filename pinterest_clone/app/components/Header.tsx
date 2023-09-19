@@ -12,6 +12,7 @@ function Header() {
     const { data: session } = useSession();
     // Initialize cloud firestore
     const db = getFirestore(app);
+    
     const saveUserInfo = async() => {
         if(session?.user){
             await setDoc(doc(db, "user", session.user.email!), {
@@ -30,19 +31,22 @@ function Header() {
 
     console.log(session);
     return (
-        <div className="flex gap-3 sm:gap-2 items-center p-3.5 text-[14px]">
-            <Image src='/logo.png' alt='logo' width={47} height={47}
-            className='hover:bg-gray-300 p-2 rounded-full cursor-pointer' />
+        <div className="flex justify-between gap-3 md:gap-2 items-center p-6">
+            <Image src='/logo.png' alt='logo' width={47} height={47} className='hover:bg-gray-300 p-2 rounded-full cursor-pointer' />
             <button className="bg-black text-white p-2 px-4 rounded-full hidden sm:block">Home</button>
-            <button className="font-semibold p-2 px-4 rounded-full">Create</button>
+            <button className="font-semibold p-2 px-4 rounded-full" onClick={()=>router.push('/pin-builder')}>Create</button>
+
             <div className="bg-[#e9e9e9] p-3 gap-3 items-center rounded-full w-full hidden sm:flex">
                 <HiSearch className='text-[23px] text-gray-500'/>
                 <input type="text" placeholder="Search" className="rounded-full px-2 py-1x bg-transparent outline-none w-full"/>
             </div>
-            <HiSearch className='text-[30px] text-gray-500 cursor-pointer sm:hidden'/>
-            <HiBell className="text-[30px] cursor-pointer sm:text-[45px] text-gray-500"/>
-            <HiChat className="text-[30px] cursor-pointer sm:text-[45px] text-gray-500"/>
-            {session?.user? <Image src={session.user.image!} onClick={()=>router.push('/'+ session.user?.email)}
+
+            <button><HiSearch className='text-[30px] text-gray-500 cursor-pointer sm:hidden'/></button>
+            <button><HiBell className="text-[30px] cursor-pointer sm:text-[32px] text-gray-500"/></button>
+            <button><HiChat className="text-[30px] cursor-pointer sm:text-[32px] text-gray-500"/></button>
+
+            {session?.user? 
+            <Image src={session.user.image!} onClick={() => router.push('/'+ session.user?.email)}
             alt='user-image' width={47} height={47} className='hover:bg-gray-300 p-2 rounded-full cursor-pointer'/>:
             <button className="font-semibold p-2 px-4 rounded-full" onClick={() => signIn()}>Login</button> }
             {/* <HiChevronDown className="text-[30px] text-gray-500"/> */}
